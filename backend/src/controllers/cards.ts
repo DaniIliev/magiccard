@@ -46,24 +46,6 @@ export const getCardById = async (req: Request, res: Response): Promise<void> =>
       res.status(404).json({ message: 'Card not found' });
       return;
     }
-    
-    let userId = null;
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-      try {
-        const token = req.headers.authorization.split(' ')[1];
-        const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
-        userId = decoded.id;
-      } catch (e) {
-        // invalid token, treat as unauthenticated
-      }
-    }
-    
-    // Check if user is owner or card is published
-    if (card.userId.toString() !== userId && !card.isPublished) {
-      res.status(401).json({ message: 'Not authorized' });
-      return;
-    }
-    
     res.json(card);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
